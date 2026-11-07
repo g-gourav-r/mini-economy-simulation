@@ -6,19 +6,21 @@ import { Html5Qrcode } from 'html5-qrcode';
 import {
   Building2,
   QrCode,
-  UserPlus,
   CheckCircle2,
   AlertCircle,
   Camera,
   CameraOff,
   RefreshCw,
-  Sparkles,
   ShieldCheck,
-  Coins,
   ChevronDown,
   User,
   ArrowLeft,
 } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function MobileBankPage() {
   const [scannerStarted, setScannerStarted] = useState(false);
@@ -60,9 +62,7 @@ export default function MobileBankPage() {
           (decodedText) => {
             handleQrCodeDetected(decodedText);
           },
-          () => {
-            // Frame search (silent)
-          }
+          () => {}
         );
         setScannerStarted(true);
         setCameraError(null);
@@ -136,7 +136,7 @@ export default function MobileBankPage() {
     }
 
     if (!kidName.trim()) {
-      setToast({ type: 'error', message: "Please enter the kid's name." });
+      setToast({ type: 'error', message: "Please enter the citizen's name." });
       return;
     }
 
@@ -157,7 +157,6 @@ export default function MobileBankPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        // Haptic failure
         if (typeof window !== 'undefined' && window.navigator?.vibrate) {
           window.navigator.vibrate([150, 80, 150]);
         }
@@ -169,14 +168,13 @@ export default function MobileBankPage() {
         return;
       }
 
-      // Haptic success
       if (typeof window !== 'undefined' && window.navigator?.vibrate) {
         window.navigator.vibrate([100, 50, 100]);
       }
 
       setToast({
         type: 'success',
-        message: `Registered ${data.citizen.name} with ₹1,000 starting grant!`,
+        message: `Registered ${data.citizen.name} with ₹1,000 starting balance.`,
         citizen: data.citizen,
       });
 
@@ -196,222 +194,224 @@ export default function MobileBankPage() {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto min-h-screen bg-gray-100 text-gray-900 flex flex-col font-sans select-none shadow-xl border-x border-gray-200 relative">
+    <div className="w-full max-w-md mx-auto min-h-screen bg-neutral-50 text-neutral-900 flex flex-col font-sans select-none shadow-sm border-x border-neutral-200 relative">
       
       {/* Mobile Top App Bar */}
-      <header className="p-3 bg-white border-b border-gray-200 sticky top-0 z-30 flex items-center justify-between shadow-sm">
+      <header className="p-3 bg-white border-b border-neutral-200 sticky top-0 z-30 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Link
-            href="/"
-            className="text-gray-700 hover:text-black font-extrabold text-sm flex items-center gap-1 shrink-0 p-1 rounded-lg"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Hub</span>
-          </Link>
+          <Button variant="ghost" size="sm" asChild className="p-2 h-8">
+            <Link href="/" className="flex items-center gap-1 text-xs font-semibold">
+              <ArrowLeft className="w-4 h-4" />
+              <span>Hub</span>
+            </Link>
+          </Button>
           <div className="flex items-center gap-1.5 ml-1">
-            <Building2 className="w-4 h-4 text-emerald-600" />
-            <h1 className="text-base font-black text-gray-900 tracking-tight">
+            <Building2 className="w-4 h-4 text-neutral-700" />
+            <h1 className="text-sm font-bold text-neutral-900 tracking-tight">
               Bank Desk
             </h1>
           </div>
         </div>
 
-        <div className="bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full text-xs font-bold text-emerald-700 font-mono">
-          <span>₹1,000 Grant</span>
-        </div>
+        <Badge variant="secondary" className="font-mono text-xs font-semibold">
+          ₹1,000 Grant
+        </Badge>
       </header>
 
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col p-3 gap-3 overflow-y-auto">
 
-        {/* Mobile Toast Banner */}
+        {/* Notification Banner */}
         {toast && (
-          <div
-            className={`p-3 rounded-xl border flex items-start gap-2.5 shadow-sm text-xs ${
-              toast.type === 'success'
-                ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-                : 'bg-rose-50 border-rose-200 text-rose-800'
-            }`}
+          <Alert
+            variant={toast.type === 'error' ? 'destructive' : 'default'}
+            className="flex items-start justify-between"
           >
-            {toast.type === 'success' ? (
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-            ) : (
-              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
-            )}
-            <div className="flex-1">
-              <p className="font-bold text-gray-900">
-                {toast.type === 'success' ? 'Activated' : 'Error'}
-              </p>
-              <p className="mt-0.5">{toast.message}</p>
-              {toast.citizen && (
-                <div className="mt-1.5 bg-white rounded-lg p-2 font-mono flex items-center justify-between text-xs border border-gray-200">
-                  <span className="text-gray-800 font-bold">{toast.citizen.name}</span>
-                  <span className="font-bold text-emerald-600">₹{toast.citizen.balance}</span>
-                </div>
+            <div className="flex items-start gap-2">
+              {toast.type === 'error' ? (
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+              ) : (
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
               )}
+              <AlertDescription className="text-xs font-medium">
+                <p className="font-bold text-neutral-900 mb-0.5">
+                  {toast.type === 'success' ? 'Activated' : 'Notice'}
+                </p>
+                <p>{toast.message}</p>
+                {toast.citizen && (
+                  <div className="mt-1.5 bg-white rounded p-1.5 font-mono flex items-center justify-between text-xs border border-neutral-200">
+                    <span className="font-semibold text-neutral-800">{toast.citizen.name}</span>
+                    <span className="font-bold text-emerald-600">₹{toast.citizen.balance}</span>
+                  </div>
+                )}
+              </AlertDescription>
             </div>
             <button
               type="button"
               onClick={() => setToast(null)}
-              className="text-gray-400 hover:text-gray-700 p-1 text-xs"
+              className="text-neutral-400 hover:text-neutral-700 p-1 text-xs"
             >
               ✕
             </button>
-          </div>
+          </Alert>
         )}
 
         {/* QR Scanner Card */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-3 shadow-sm">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-gray-700 flex items-center gap-1.5">
-              <Camera className="w-4 h-4 text-emerald-600" />
+        <Card>
+          <CardHeader className="p-3 pb-2 flex flex-row items-center justify-between space-y-0">
+            <span className="text-xs font-medium text-neutral-700 flex items-center gap-1.5">
+              <Camera className="w-3.5 h-3.5 text-neutral-600" />
               <span>Card Scanner</span>
             </span>
-            <span
-              className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
-                scannerStarted
-                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                  : 'bg-amber-50 text-amber-700 border border-amber-200'
-              }`}
-            >
-              {scannerStarted ? 'Active' : 'Offline'}
-            </span>
-          </div>
+            <Badge variant="outline" className="text-[10px] font-medium">
+              {scannerStarted ? 'Camera Active' : 'Camera Inactive'}
+            </Badge>
+          </CardHeader>
+          <CardContent className="p-3 pt-0">
+            {/* Camera Viewport */}
+            <div className="relative w-full aspect-[4/3] bg-neutral-900 rounded-lg overflow-hidden border border-neutral-200 flex items-center justify-center">
+              <div id="bank-mobile-qr-reader" className="w-full h-full" />
 
-          {/* Camera Viewport */}
-          <div className="relative w-full aspect-[4/3] bg-gray-900 rounded-xl overflow-hidden border border-gray-200 flex items-center justify-center">
-            <div id="bank-mobile-qr-reader" className="w-full h-full" />
-
-            <div className="absolute inset-0 pointer-events-none border-2 border-emerald-400/50 rounded-xl m-6 flex items-center justify-center">
-              <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
-            </div>
-
-            {cameraError && (
-              <div className="absolute inset-0 bg-gray-900 flex flex-col items-center justify-center p-4 text-center z-10 text-white">
-                <CameraOff className="w-7 h-7 text-amber-400 mb-1" />
-                <p className="text-xs">{cameraError}</p>
+              <div className="absolute inset-0 pointer-events-none border border-neutral-400/50 rounded-lg m-8 flex items-center justify-center">
+                <div className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
               </div>
-            )}
-          </div>
-        </div>
+
+              {cameraError && (
+                <div className="absolute inset-0 bg-neutral-900 flex flex-col items-center justify-center p-4 text-center z-10 text-white">
+                  <CameraOff className="w-6 h-6 text-neutral-400 mb-1" />
+                  <p className="text-xs text-neutral-400">{cameraError}</p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Citizen Activation Form */}
-        <form onSubmit={handleRegisterCitizen} className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm flex flex-col gap-3">
-          
-          {/* Card Status Indicator */}
-          <div>
-            {scannedQrId ? (
-              <div className="flex items-center justify-between p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl">
-                <div className="flex items-center gap-2">
-                  <QrCode className="w-4 h-4 text-emerald-600" />
-                  <span className="font-mono text-xs font-bold text-emerald-800">{scannedQrId}</span>
+        <Card>
+          <CardContent className="p-3.5">
+            <form onSubmit={handleRegisterCitizen} className="flex flex-col gap-3">
+              {/* Card Status Indicator */}
+              <div>
+                {scannedQrId ? (
+                  <div className="flex items-center justify-between p-2.5 bg-neutral-100 border border-neutral-200 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <QrCode className="w-4 h-4 text-neutral-700" />
+                      <span className="font-mono text-xs font-bold text-neutral-900">{scannedQrId}</span>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={resumeScanner}
+                      className="h-7 px-2 text-xs"
+                    >
+                      <RefreshCw className="w-3 h-3 mr-1" />
+                      Rescan
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="p-2.5 bg-neutral-50 border border-dashed border-neutral-300 rounded-lg text-center">
+                    <p className="text-xs text-neutral-500 font-mono">
+                      Scan Debit Card QR...
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Name Field */}
+              <div>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-neutral-400">
+                    <User className="w-4 h-4" />
+                  </div>
+                  <Input
+                    id="mobile-kid-name"
+                    ref={nameInputRef}
+                    type="text"
+                    placeholder="Citizen Full Name"
+                    value={kidName}
+                    onChange={(e) => setKidName(e.target.value)}
+                    disabled={!scannedQrId || isLoading}
+                    className="pl-9 text-sm"
+                  />
                 </div>
-                <button
-                  type="button"
-                  onClick={resumeScanner}
-                  className="text-xs text-gray-600 hover:text-gray-900 flex items-center gap-1 px-2 py-1 rounded bg-white border border-gray-200 font-bold shadow-xs"
-                >
-                  <RefreshCw className="w-3 h-3" />
-                  Rescan
-                </button>
               </div>
-            ) : (
-              <div className="p-2.5 bg-gray-50 border border-dashed border-gray-300 rounded-xl text-center">
-                <p className="text-xs text-gray-500 font-mono">
-                  Scan Debit Card QR...
-                </p>
-              </div>
-            )}
-          </div>
 
-          {/* Name Field */}
-          <div>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                <User className="w-4 h-4" />
-              </div>
-              <input
-                id="mobile-kid-name"
-                ref={nameInputRef}
-                type="text"
-                placeholder="Full Name"
-                value={kidName}
-                onChange={(e) => setKidName(e.target.value)}
-                disabled={!scannedQrId || isLoading}
-                className="w-full bg-gray-50 border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl pl-9 pr-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:bg-white font-semibold transition-colors"
-              />
-            </div>
-          </div>
-
-          {/* Submit Action Button */}
-          <button
-            type="submit"
-            disabled={!scannedQrId || !kidName.trim() || isLoading}
-            className="w-full py-3.5 px-4 rounded-xl font-bold bg-emerald-500 hover:bg-emerald-600 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed text-white text-sm shadow-[0_4px_0_#059669] active:translate-y-1 active:shadow-none flex items-center justify-center gap-2 transition-all cursor-pointer"
-          >
-            {isLoading ? (
-              <>
-                <RefreshCw className="w-4 h-4 animate-spin" />
-                <span>Registering...</span>
-              </>
-            ) : (
-              <>
-                <ShieldCheck className="w-5 h-5" />
-                <span>Activate Card (+₹1,000)</span>
-              </>
-            )}
-          </button>
-        </form>
+              {/* Submit Action Button */}
+              <Button
+                type="submit"
+                disabled={!scannedQrId || !kidName.trim() || isLoading}
+                className="w-full flex items-center justify-center gap-2"
+              >
+                {isLoading ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    <span>Registering...</span>
+                  </>
+                ) : (
+                  <>
+                    <ShieldCheck className="w-4 h-4" />
+                    <span>Activate Card (+₹1,000)</span>
+                  </>
+                )}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
 
         {/* Manual Test Fallback */}
         <div className="flex gap-2">
-          <input
+          <Input
             type="text"
             placeholder="Simulate Card ID"
             value={manualQrInput}
             onChange={(e) => setManualQrInput(e.target.value)}
-            className="flex-1 bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 font-mono shadow-xs"
+            className="h-8 font-mono text-xs"
           />
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="sm"
             onClick={() => {
               if (manualQrInput.trim()) {
                 handleQrCodeDetected(manualQrInput.trim());
                 setManualQrInput('');
               }
             }}
-            className="px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold text-xs rounded-xl transition-colors shadow-xs"
+            className="h-8 text-xs"
           >
             Simulate
-          </button>
+          </Button>
         </div>
 
         {/* Expandable Recent Registrations */}
         {recentRegistrations.length > 0 && (
-          <div className="bg-white border border-gray-200 rounded-xl p-3 shadow-sm">
-            <button
-              type="button"
-              onClick={() => setShowRecent(!showRecent)}
-              className="w-full flex items-center justify-between text-xs font-bold text-gray-700"
-            >
-              <span>Recent Cards ({recentRegistrations.length})</span>
-              <ChevronDown className={`w-4 h-4 transition-transform ${showRecent ? 'rotate-180' : ''}`} />
-            </button>
+          <Card>
+            <CardContent className="p-3">
+              <button
+                type="button"
+                onClick={() => setShowRecent(!showRecent)}
+                className="w-full flex items-center justify-between text-xs font-medium text-neutral-700"
+              >
+                <span>Recent Activations ({recentRegistrations.length})</span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showRecent ? 'rotate-180' : ''}`} />
+              </button>
 
-            {showRecent && (
-              <div className="mt-2 divide-y divide-gray-100 max-h-48 overflow-y-auto">
-                {recentRegistrations.map((citizen) => (
-                  <div key={citizen.id} className="py-2 flex items-center justify-between text-xs">
-                    <div>
-                      <p className="font-bold text-gray-900">{citizen.name}</p>
-                      <p className="text-[10px] font-mono text-gray-500">{citizen.qr_id}</p>
+              {showRecent && (
+                <div className="mt-2.5 divide-y divide-neutral-100 max-h-48 overflow-y-auto">
+                  {recentRegistrations.map((citizen) => (
+                    <div key={citizen.id} className="py-2 flex items-center justify-between text-xs">
+                      <div>
+                        <p className="font-semibold text-neutral-900">{citizen.name}</p>
+                        <p className="text-[10px] font-mono text-neutral-400">{citizen.qr_id}</p>
+                      </div>
+                      <span className="font-mono font-bold text-neutral-900">₹{citizen.balance}</span>
                     </div>
-                    <span className="font-mono font-bold text-emerald-600">₹{citizen.balance}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
         )}
 
       </main>

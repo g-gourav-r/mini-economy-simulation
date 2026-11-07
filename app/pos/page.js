@@ -10,7 +10,6 @@ import {
   TrendingUp,
   Gamepad2,
   Building2,
-  QrCode,
   CheckCircle2,
   XCircle,
   CameraOff,
@@ -18,33 +17,32 @@ import {
   ArrowLeft,
   RefreshCw,
   Coins,
-  Sparkles,
   ArrowDownToLine,
   ArrowUpFromLine,
   Flame,
 } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 
 const STATIONS = {
   Entertainment: {
     name: 'Entertainment Shop',
-    tagline: 'YouTube on Laptop',
+    tagline: 'Media & Streaming',
     icon: Tv,
-    theme: 'rose',
-    badgeClass: 'bg-rose-50 text-rose-700 border-rose-200',
     type: 'standard',
     actions: [
       { label: '-₹ 100', desc: 'Short Video / Reel', amount: -100, type: 'debit' },
       { label: '-₹ 200', desc: 'Full Song / Music Video', amount: -200, type: 'debit' },
-      { label: '-₹ 300', desc: 'VIP Gaming Stream', amount: -300, type: 'debit' },
+      { label: '-₹ 300', desc: 'Gaming Stream Session', amount: -300, type: 'debit' },
       { label: '+₹ 100', desc: 'Music Trivia Win', amount: 100, type: 'credit' },
     ],
   },
   Travel: {
     name: 'Travel Arena',
-    tagline: '3D Google Earth / 4K Tours',
+    tagline: 'Virtual Tours & Exploration',
     icon: Globe,
-    theme: 'sky',
-    badgeClass: 'bg-sky-50 text-sky-700 border-sky-200',
     type: 'standard',
     actions: [
       { label: '-₹ 100', desc: 'City 3D Flyover', amount: -100, type: 'debit' },
@@ -55,10 +53,8 @@ const STATIONS = {
   },
   Scam: {
     name: 'Scam Alley',
-    tagline: 'Double or Nothing Trap',
+    tagline: 'Risk & Probability Game',
     icon: ShieldAlert,
-    theme: 'red',
-    badgeClass: 'bg-red-50 text-red-700 border-red-200',
     type: 'scam',
     actions: [
       { label: 'Wager ₹ 100', desc: 'Double or Nothing', wager: 100, type: 'wager' },
@@ -68,32 +64,26 @@ const STATIONS = {
   },
   MF: {
     name: 'Mutual Funds',
-    tagline: 'Invest & Liquidate',
+    tagline: 'Investment & Liquidation',
     icon: TrendingUp,
-    theme: 'amber',
-    badgeClass: 'bg-amber-50 text-amber-700 border-amber-200',
     type: 'mutual_fund',
     actions: [],
   },
   Arcade: {
     name: 'Arcade Zone',
-    tagline: 'Browser Minigames',
+    tagline: 'Minigames & Tournaments',
     icon: Gamepad2,
-    theme: 'purple',
-    badgeClass: 'bg-purple-50 text-purple-700 border-purple-200',
     type: 'standard',
     actions: [
       { label: '-₹ 100', desc: '5-Min Solo Session', amount: -100, type: 'debit' },
-      { label: '-₹ 200', desc: '1v1 Arena Battle', amount: -200, type: 'debit' },
-      { label: '+₹ 200', desc: 'Beat High Score Prize', amount: 200, type: 'credit', span: true },
+      { label: '-₹ 200', desc: '1v1 Arena Match', amount: -200, type: 'debit' },
+      { label: '+₹ 200', desc: 'High Score Bounty', amount: 200, type: 'credit', span: true },
     ],
   },
   Bank: {
     name: 'Central Bank',
     tagline: 'Insurance & Wages',
     icon: Building2,
-    theme: 'emerald',
-    badgeClass: 'bg-emerald-50 text-emerald-700 border-emerald-200',
     type: 'standard',
     actions: [
       { label: '-₹ 150', desc: 'Storm Insurance', amount: -150, type: 'debit' },
@@ -185,7 +175,7 @@ export default function PosPage() {
     };
   }, []);
 
-  // Fetch full citizen details
+  // Fetch citizen details
   const fetchCitizenDetails = async (cleanId) => {
     try {
       const res = await fetch(`/api/citizens?qrId=${encodeURIComponent(cleanId)}`);
@@ -305,7 +295,7 @@ export default function PosPage() {
   // Standard debit/credit
   const handleStandardTransaction = (amount, description) => {
     if (balance + amount < 0) {
-      setErrorMessage(`Insufficient funds! Citizen has only ₹${balance}.`);
+      setErrorMessage(`Insufficient funds. Citizen balance is ₹${balance}.`);
       return;
     }
     executeTransaction({
@@ -317,7 +307,7 @@ export default function PosPage() {
   // Scam Alley Wager
   const handleScamWager = (wager) => {
     if (balance < wager) {
-      setErrorMessage(`Cannot wager ₹${wager}! Balance is only ₹${balance}.`);
+      setErrorMessage(`Cannot wager ₹${wager}. Balance is ₹${balance}.`);
       return;
     }
     executeTransaction({
@@ -330,7 +320,7 @@ export default function PosPage() {
   // Mutual Fund Invest
   const handleMfInvest = (amount) => {
     if (balance < amount) {
-      setErrorMessage(`Insufficient liquid cash! Wallet only has ₹${balance}.`);
+      setErrorMessage(`Insufficient liquid funds. Wallet balance is ₹${balance}.`);
       return;
     }
     executeTransaction({
@@ -342,7 +332,7 @@ export default function PosPage() {
   // Mutual Fund Withdraw / Cash Out
   const handleMfWithdraw = (withdrawMode) => {
     if (mfInvested <= 0) {
-      setErrorMessage('No mutual funds available to cash out!');
+      setErrorMessage('No mutual funds available to liquidate.');
       return;
     }
     executeTransaction({
@@ -352,7 +342,7 @@ export default function PosPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto min-h-screen bg-gray-100 text-gray-900 font-sans flex flex-col justify-between relative select-none shadow-xl border-x border-gray-200">
+    <div className="max-w-md mx-auto min-h-screen bg-neutral-50 text-neutral-900 font-sans flex flex-col justify-between relative select-none shadow-sm border-x border-neutral-200">
       {/* Audio Engine */}
       <audio ref={beepAudioRef} src="/sounds/beep.mp3" preload="auto" />
       <audio ref={chaChingAudioRef} src="/sounds/cha-ching.mp3" preload="auto" />
@@ -362,19 +352,19 @@ export default function PosPage() {
         <div
           className={`fixed inset-0 z-50 flex flex-col items-center justify-center p-6 text-white text-center animate-in zoom-in-95 duration-200 ${
             successOverlay.scamResult === 'bust'
-              ? 'bg-rose-600'
-              : 'bg-emerald-600'
+              ? 'bg-neutral-900'
+              : 'bg-neutral-900'
           }`}
         >
-          <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mb-4 animate-bounce">
+          <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mb-4">
             {successOverlay.scamResult === 'bust' ? (
-              <XCircle className="w-12 h-12 text-white" />
+              <XCircle className="w-10 h-10 text-rose-400" />
             ) : (
-              <CheckCircle2 className="w-12 h-12 text-white" />
+              <CheckCircle2 className="w-10 h-10 text-emerald-400" />
             )}
           </div>
 
-          <h1 className="text-5xl font-black font-mono tracking-tight my-2">
+          <h1 className="text-4xl font-bold font-mono tracking-tight my-2">
             {successOverlay.scamResult === 'bust'
               ? `- ₹ ${Math.abs(successOverlay.amount)}`
               : successOverlay.amount < 0
@@ -382,27 +372,27 @@ export default function PosPage() {
               : `+ ₹ ${successOverlay.amount}`}
           </h1>
 
-          <p className="text-2xl font-black text-white/95 mt-1">
+          <p className="text-xl font-semibold text-neutral-100 mt-1">
             {successOverlay.citizenName}
           </p>
 
           {successOverlay.message && (
-            <p className="text-sm font-bold text-white/90 mt-2 max-w-xs">
+            <p className="text-xs text-neutral-300 mt-2 max-w-xs">
               {successOverlay.message}
             </p>
           )}
 
-          <div className="mt-5 bg-black/20 rounded-2xl p-4 border border-white/20 w-full max-w-xs shadow-xl">
-            <div className="flex justify-between items-center text-left text-xs uppercase font-extrabold tracking-wider text-white/80 mb-1">
+          <div className="mt-5 bg-white/10 rounded-xl p-4 border border-white/10 w-full max-w-xs text-left">
+            <div className="flex justify-between items-center text-xs text-neutral-300 mb-1">
               <span>Liquid Wallet:</span>
-              <span className="font-mono text-xl text-white font-black">
+              <span className="font-mono text-lg text-white font-bold">
                 ₹ {successOverlay.newBalance}
               </span>
             </div>
             {successOverlay.mfInvested > 0 && (
-              <div className="flex justify-between items-center text-left text-xs uppercase font-extrabold tracking-wider text-white/80 pt-1 border-t border-white/10">
-                <span>Invested MF:</span>
-                <span className="font-mono text-base text-yellow-300 font-black">
+              <div className="flex justify-between items-center text-xs text-neutral-300 pt-1 border-t border-white/10">
+                <span>Mutual Funds:</span>
+                <span className="font-mono text-sm text-neutral-100 font-bold">
                   ₹ {successOverlay.mfInvested}
                 </span>
               </div>
@@ -412,64 +402,64 @@ export default function PosPage() {
       )}
 
       {/* Top Header: Back & Station Switcher */}
-      <header className="p-3 bg-white border-b border-gray-200 sticky top-0 z-20 shadow-sm flex items-center justify-between gap-2">
-        <Link
-          href="/"
-          className="text-gray-700 hover:text-black font-extrabold text-sm flex items-center gap-1 shrink-0 p-1 rounded-lg"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Hub</span>
-        </Link>
+      <header className="p-3 bg-white border-b border-neutral-200 sticky top-0 z-20 flex items-center justify-between gap-2">
+        <Button variant="ghost" size="sm" asChild className="p-2 h-8">
+          <Link href="/" className="flex items-center gap-1 text-xs font-semibold">
+            <ArrowLeft className="w-4 h-4" />
+            <span>Hub</span>
+          </Link>
+        </Button>
 
-        <div className="relative flex-1 max-w-[240px]">
-          <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-gray-700">
+        <div className="relative flex-1 max-w-[220px]">
+          <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-neutral-600">
             <StationIcon className="w-4 h-4" />
           </div>
           <select
             value={stationKey}
             onChange={(e) => setStationKey(e.target.value)}
-            className="w-full bg-gray-50 border border-gray-300 text-gray-900 font-extrabold text-xs rounded-xl pl-8 pr-6 py-2 appearance-none focus:outline-none focus:border-blue-500 focus:bg-white cursor-pointer shadow-xs"
+            className="w-full bg-neutral-100 border border-neutral-300 text-neutral-900 font-semibold text-xs rounded-md pl-8 pr-6 py-1.5 appearance-none focus:outline-none focus:ring-1 focus:ring-neutral-900 cursor-pointer"
           >
             {Object.keys(STATIONS).map((key) => (
-              <option key={key} value={key} className="bg-white text-gray-900">
+              <option key={key} value={key} className="bg-white text-neutral-900">
                 {STATIONS[key].name}
               </option>
             ))}
           </select>
-          <div className="absolute inset-y-0 right-0 pr-2.5 flex items-center pointer-events-none text-gray-400 text-[10px]">
+          <div className="absolute inset-y-0 right-0 pr-2.5 flex items-center pointer-events-none text-neutral-400 text-[10px]">
             ▼
           </div>
         </div>
 
         {isPaused ? (
-          <button
-            type="button"
+          <Button
+            size="sm"
+            variant="outline"
             onClick={resumeScanner}
-            className="px-2.5 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold text-xs rounded-lg flex items-center gap-1 shadow-xs cursor-pointer active:scale-95"
+            className="h-8 px-2.5 text-xs font-medium"
           >
-            <RefreshCw className="w-3 h-3" />
-            <span>Next</span>
-          </button>
+            <RefreshCw className="w-3.5 h-3.5 mr-1" />
+            Next
+          </Button>
         ) : (
-          <span className="text-[10px] font-bold px-2 py-1 rounded bg-gray-100 text-gray-600 border border-gray-200">
+          <Badge variant="outline" className="text-[10px] font-medium">
             Scanning
-          </span>
+          </Badge>
         )}
       </header>
 
       {/* Main Viewport */}
-      <main className="p-3 flex-1 flex flex-col gap-2.5 overflow-y-auto">
+      <main className="p-3 flex-1 flex flex-col gap-3 overflow-y-auto">
         {/* Error Alert */}
         {errorMessage && (
-          <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold flex items-center justify-between shadow-xs">
+          <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-900 text-xs font-medium flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <XCircle className="w-4 h-4 text-rose-600 shrink-0" />
+              <XCircle className="w-4 h-4 text-red-600 shrink-0" />
               <span>{errorMessage}</span>
             </div>
             <button
               type="button"
               onClick={() => setErrorMessage(null)}
-              className="text-rose-500 hover:text-rose-800 p-1"
+              className="text-red-500 hover:text-red-800 p-1 text-xs"
             >
               ✕
             </button>
@@ -477,13 +467,13 @@ export default function PosPage() {
         )}
 
         {/* Proper Live Camera QR Scanner Viewport */}
-        <div className="relative w-full aspect-[4/3] bg-gray-900 rounded-2xl overflow-hidden border border-gray-300 shadow-inner flex items-center justify-center">
+        <div className="relative w-full aspect-[4/3] bg-neutral-900 rounded-xl overflow-hidden border border-neutral-300 flex items-center justify-center">
           <div id="pos-mobile-qr-reader" className="w-full h-full" />
 
           {/* Reticle Guide */}
           {!isPaused && (
-            <div className="absolute inset-0 pointer-events-none border-2 border-emerald-400/60 rounded-2xl m-6 flex items-center justify-center">
-              <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
+            <div className="absolute inset-0 pointer-events-none border border-neutral-400/50 rounded-lg m-8 flex items-center justify-center">
+              <div className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
             </div>
           )}
 
@@ -491,222 +481,204 @@ export default function PosPage() {
           {isPaused && (
             <div
               onClick={resumeScanner}
-              className="absolute inset-0 bg-black/50 backdrop-blur-xs flex flex-col items-center justify-center p-4 text-center cursor-pointer z-10"
+              className="absolute inset-0 bg-neutral-950/60 backdrop-blur-xs flex flex-col items-center justify-center p-4 text-center cursor-pointer z-10"
             >
-              <div className="px-4 py-2 bg-white text-gray-900 font-black text-sm rounded-xl shadow-lg flex items-center gap-2">
-                <RefreshCw className="w-4 h-4 text-emerald-600 animate-spin" />
-                <span>Tap to Scan Next Card</span>
-              </div>
+              <Button size="sm" variant="secondary" className="shadow-md">
+                <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
+                Tap to Scan Next Card
+              </Button>
             </div>
           )}
 
           {cameraError && (
-            <div className="absolute inset-0 bg-gray-900 flex flex-col items-center justify-center p-4 text-center z-10 text-white">
-              <CameraOff className="w-8 h-8 text-amber-400 mb-2" />
-              <p className="text-xs">{cameraError}</p>
+            <div className="absolute inset-0 bg-neutral-900 flex flex-col items-center justify-center p-4 text-center z-10 text-white">
+              <CameraOff className="w-7 h-7 text-neutral-400 mb-1" />
+              <p className="text-xs text-neutral-400">{cameraError}</p>
             </div>
           )}
         </div>
 
         {/* Scanned Citizen Display */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center font-bold">
-                <User className="w-5 h-5" />
+        <Card className="border-neutral-200">
+          <CardContent className="p-3.5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-lg bg-neutral-100 border border-neutral-200 text-neutral-700 flex items-center justify-center">
+                  <User className="w-4 h-4" />
+                </div>
+                <div>
+                  <h2 className="text-sm font-bold text-neutral-900 leading-tight">
+                    {citizenName}
+                  </h2>
+                  <span className="text-[11px] font-mono text-neutral-500">
+                    {qrId}
+                  </span>
+                </div>
               </div>
-              <div>
-                <h2 className="text-lg font-black text-gray-900 leading-tight">
-                  {citizenName}
-                </h2>
-                <span className="text-xs font-mono text-gray-500 font-bold">
-                  {qrId}
+
+              <div className="text-right">
+                <span className="text-[10px] uppercase font-semibold text-neutral-400 block leading-none">
+                  Balance
+                </span>
+                <span className="text-2xl font-bold font-mono tracking-tight text-neutral-900">
+                  ₹{balance}
                 </span>
               </div>
             </div>
 
-            <div className="text-right">
-              <span className="text-xs uppercase font-extrabold text-gray-400 block leading-none">
-                Wallet
-              </span>
-              <span className="text-3xl font-black font-mono tracking-tight text-gray-900">
-                ₹{balance}
-              </span>
-            </div>
-          </div>
-
-          {/* Mutual Fund Dual Balance Row (if MF station or has investment) */}
-          {(stationKey === 'MF' || mfInvested > 0) && (
-            <div className="mt-3 pt-2.5 border-t border-gray-100 flex items-center justify-between text-xs">
-              <span className="font-bold text-amber-800 flex items-center gap-1">
-                <TrendingUp className="w-3.5 h-3.5 text-amber-600" />
-                Invested in Mutual Funds:
-              </span>
-              <span className="font-mono font-black text-amber-600 text-sm">
-                ₹ {mfInvested}
-              </span>
-            </div>
-          )}
-        </div>
+            {/* Mutual Fund Dual Balance Row (if MF station or has investment) */}
+            {(stationKey === 'MF' || mfInvested > 0) && (
+              <div className="mt-2.5 pt-2 border-t border-neutral-100 flex items-center justify-between text-xs">
+                <span className="text-neutral-600 flex items-center gap-1 font-medium">
+                  <TrendingUp className="w-3.5 h-3.5 text-neutral-500" />
+                  Invested in Mutual Funds:
+                </span>
+                <span className="font-mono font-bold text-neutral-900 text-xs">
+                  ₹ {mfInvested}
+                </span>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Action Controls by Station Type */}
 
         {/* 1. SCAM ALLEY: Double or Nothing Wagers */}
         {activeStation.type === 'scam' && (
-          <div className="space-y-2.5">
-            <div className="grid grid-cols-2 gap-2.5">
-              <button
-                type="button"
+          <div className="space-y-2">
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                variant="outline"
                 disabled={isProcessing}
                 onClick={() => handleScamWager(100)}
-                className="min-h-[76px] rounded-2xl flex flex-col items-center justify-center transition-all cursor-pointer select-none active:translate-y-1 active:shadow-none p-3 bg-red-600 hover:bg-red-700 text-white shadow-[0_4px_0_#b91c1c] border border-red-700"
+                className="h-auto py-3 flex flex-col items-center justify-center border-neutral-300"
               >
                 <div className="flex items-center gap-1">
-                  <Flame className="w-4 h-4 text-yellow-300" />
-                  <span className="text-xl font-black font-mono tracking-tight">
-                    Wager ₹100
-                  </span>
+                  <Flame className="w-4 h-4 text-neutral-700" />
+                  <span className="text-base font-bold font-mono">Wager ₹100</span>
                 </div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-red-100 mt-1">
+                <span className="text-[10px] text-neutral-500 mt-0.5">
                   Double or Nothing
                 </span>
-              </button>
+              </Button>
 
-              <button
-                type="button"
+              <Button
+                variant="outline"
                 disabled={isProcessing}
                 onClick={() => handleScamWager(200)}
-                className="min-h-[76px] rounded-2xl flex flex-col items-center justify-center transition-all cursor-pointer select-none active:translate-y-1 active:shadow-none p-3 bg-rose-700 hover:bg-rose-800 text-white shadow-[0_4px_0_#881337] border border-rose-800"
+                className="h-auto py-3 flex flex-col items-center justify-center border-neutral-300"
               >
                 <div className="flex items-center gap-1">
-                  <Sparkles className="w-4 h-4 text-yellow-300" />
-                  <span className="text-xl font-black font-mono tracking-tight">
-                    Wager ₹200
-                  </span>
+                  <Flame className="w-4 h-4 text-neutral-700" />
+                  <span className="text-base font-bold font-mono">Wager ₹200</span>
                 </div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-rose-100 mt-1">
-                  High Roller
+                <span className="text-[10px] text-neutral-500 mt-0.5">
+                  High Risk Wager
                 </span>
-              </button>
+              </Button>
             </div>
 
-            <button
-              type="button"
+            <Button
+              variant="secondary"
               disabled={isProcessing}
               onClick={() => handleStandardTransaction(100, 'Report Scam Bounty')}
-              className="w-full min-h-[52px] rounded-2xl flex items-center justify-center gap-2 transition-all cursor-pointer select-none active:translate-y-1 active:shadow-none p-3 bg-emerald-500 hover:bg-emerald-600 text-white shadow-[0_4px_0_#059669] border border-emerald-600 font-bold"
+              className="w-full flex items-center justify-center gap-1.5 text-xs font-semibold"
             >
-              <Coins className="w-4 h-4" />
-              <span className="text-sm font-black">+₹ 100 Report Scam Bounty</span>
-            </button>
+              <Coins className="w-3.5 h-3.5 text-neutral-600" />
+              <span>+₹ 100 Report Scam Bounty</span>
+            </Button>
           </div>
         )}
 
         {/* 2. MUTUAL FUNDS: Deposit & Retrieval (Cash Out) */}
         {activeStation.type === 'mutual_fund' && (
-          <div className="space-y-3">
+          <div className="space-y-2">
             {/* Deposit Row */}
-            <div className="grid grid-cols-2 gap-2.5">
-              <button
-                type="button"
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                variant="outline"
                 disabled={isProcessing}
                 onClick={() => handleMfInvest(200)}
-                className="min-h-[64px] rounded-2xl flex flex-col items-center justify-center transition-all cursor-pointer select-none active:translate-y-1 active:shadow-none p-2 bg-blue-600 hover:bg-blue-700 text-white shadow-[0_4px_0_#1d4ed8] border border-blue-700"
+                className="h-auto py-3 flex flex-col items-center justify-center"
               >
                 <div className="flex items-center gap-1">
-                  <ArrowDownToLine className="w-4 h-4 text-blue-200" />
-                  <span className="text-xl font-black font-mono tracking-tight">
-                    Invest ₹200
-                  </span>
+                  <ArrowDownToLine className="w-3.5 h-3.5 text-neutral-600" />
+                  <span className="text-base font-bold font-mono">Invest ₹200</span>
                 </div>
-                <span className="text-[10px] font-bold uppercase tracking-wider opacity-90 mt-0.5">
-                  -Wallet +MF Units
+                <span className="text-[10px] text-neutral-500 mt-0.5">
+                  Buy Fund Units
                 </span>
-              </button>
+              </Button>
 
-              <button
-                type="button"
+              <Button
+                variant="outline"
                 disabled={isProcessing}
                 onClick={() => handleMfInvest(500)}
-                className="min-h-[64px] rounded-2xl flex flex-col items-center justify-center transition-all cursor-pointer select-none active:translate-y-1 active:shadow-none p-2 bg-indigo-600 hover:bg-indigo-700 text-white shadow-[0_4px_0_#4338ca] border border-indigo-700"
+                className="h-auto py-3 flex flex-col items-center justify-center"
               >
                 <div className="flex items-center gap-1">
-                  <ArrowDownToLine className="w-4 h-4 text-indigo-200" />
-                  <span className="text-xl font-black font-mono tracking-tight">
-                    Invest ₹500
-                  </span>
+                  <ArrowDownToLine className="w-3.5 h-3.5 text-neutral-600" />
+                  <span className="text-base font-bold font-mono">Invest ₹500</span>
                 </div>
-                <span className="text-[10px] font-bold uppercase tracking-wider opacity-90 mt-0.5">
-                  Large Deposit
+                <span className="text-[10px] text-neutral-500 mt-0.5">
+                  Large Investment
                 </span>
-              </button>
+              </Button>
             </div>
 
             {/* Retrieval / Cash Out Row */}
-            <div className="grid grid-cols-2 gap-2.5">
-              <button
-                type="button"
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                variant="secondary"
                 disabled={isProcessing || mfInvested <= 0}
                 onClick={() => handleMfWithdraw('half')}
-                className="min-h-[64px] rounded-2xl flex flex-col items-center justify-center transition-all cursor-pointer select-none active:translate-y-1 active:shadow-none p-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-200 disabled:text-gray-400 disabled:shadow-none disabled:cursor-not-allowed text-white shadow-[0_4px_0_#047857] border border-emerald-700"
+                className="h-auto py-2.5 flex flex-col items-center justify-center"
               >
                 <div className="flex items-center gap-1">
-                  <ArrowUpFromLine className="w-4 h-4 text-emerald-200" />
-                  <span className="text-lg font-black tracking-tight">
-                    Cash Out 50%
-                  </span>
+                  <ArrowUpFromLine className="w-3.5 h-3.5 text-neutral-600" />
+                  <span className="text-xs font-bold">Liquidate 50%</span>
                 </div>
-                <span className="text-[10px] font-bold uppercase tracking-wider opacity-90 mt-0.5">
-                  Liquidate Half
-                </span>
-              </button>
+                <span className="text-[10px] text-neutral-500">Withdraw Half</span>
+              </Button>
 
-              <button
-                type="button"
+              <Button
+                variant="secondary"
                 disabled={isProcessing || mfInvested <= 0}
                 onClick={() => handleMfWithdraw('all')}
-                className="min-h-[64px] rounded-2xl flex flex-col items-center justify-center transition-all cursor-pointer select-none active:translate-y-1 active:shadow-none p-2 bg-amber-500 hover:bg-amber-600 disabled:bg-gray-200 disabled:text-gray-400 disabled:shadow-none disabled:cursor-not-allowed text-white shadow-[0_4px_0_#d97706] border border-amber-600"
+                className="h-auto py-2.5 flex flex-col items-center justify-center"
               >
                 <div className="flex items-center gap-1">
-                  <Coins className="w-4 h-4 text-amber-100" />
-                  <span className="text-lg font-black tracking-tight">
-                    Cash Out ALL
-                  </span>
+                  <Coins className="w-3.5 h-3.5 text-neutral-600" />
+                  <span className="text-xs font-bold">Liquidate All</span>
                 </div>
-                <span className="text-[10px] font-bold uppercase tracking-wider opacity-90 mt-0.5">
-                  100% Liquidation
-                </span>
-              </button>
+                <span className="text-[10px] text-neutral-500">100% Cash Out</span>
+              </Button>
             </div>
           </div>
         )}
 
-        {/* 3. STANDARD STATIONS: 3D Tactile Buttons */}
+        {/* 3. STANDARD STATIONS: Clean Buttons */}
         {activeStation.type === 'standard' && (
-          <div className="grid grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-2 gap-2">
             {activeStation.actions.map((act, idx) => {
               const isDebit = act.type === 'debit';
               return (
-                <button
+                <Button
                   key={idx}
-                  type="button"
+                  variant={isDebit ? 'outline' : 'secondary'}
                   disabled={isProcessing}
                   onClick={() => handleStandardTransaction(act.amount, act.desc)}
-                  className={`min-h-[68px] rounded-2xl flex flex-col items-center justify-center transition-all cursor-pointer select-none active:translate-y-1 active:shadow-none p-2 ${
+                  className={`h-auto py-3 flex flex-col items-center justify-center ${
                     act.span ? 'col-span-2' : ''
-                  } ${
-                    isDebit
-                      ? 'bg-red-500 hover:bg-red-600 text-white shadow-[0_4px_0_#dc2626] border border-red-600'
-                      : 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-[0_4px_0_#059669] border border-emerald-600'
                   }`}
                 >
-                  <span className="text-2xl font-black font-mono tracking-tight leading-tight">
+                  <span className="text-xl font-bold font-mono tracking-tight leading-tight">
                     {act.label}
                   </span>
-                  <span className="text-xs font-bold uppercase tracking-wider opacity-90 mt-0.5">
+                  <span className="text-[11px] text-neutral-500 mt-0.5 font-normal">
                     {act.desc}
                   </span>
-                </button>
+                </Button>
               );
             })}
           </div>
@@ -714,25 +686,27 @@ export default function PosPage() {
 
         {/* Manual Test Fallback */}
         <div className="flex items-center gap-2 pt-1">
-          <input
+          <Input
             type="text"
             placeholder="Simulate Card ID"
             value={manualInput}
             onChange={(e) => setManualInput(e.target.value)}
-            className="flex-1 bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs font-mono text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 shadow-xs"
+            className="h-8 font-mono text-xs"
           />
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="sm"
             onClick={() => {
               if (manualInput.trim()) {
                 handleCardScanned(manualInput.trim());
                 setManualInput('');
               }
             }}
-            className="px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold text-xs rounded-xl shadow-xs cursor-pointer active:scale-95"
+            className="h-8 text-xs"
           >
             Simulate
-          </button>
+          </Button>
         </div>
       </main>
     </div>

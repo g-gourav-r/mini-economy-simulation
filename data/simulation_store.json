@@ -1,17 +1,17 @@
 {
   "currentSession": {
-    "id": "SESSION-658383",
-    "name": "Batch 2 - Grade 8A",
-    "createdAt": "2026-11-07T06:07:38.383Z"
+    "id": "SESSION-DEFAULT",
+    "name": "General Session",
+    "createdAt": "2026-11-07T06:00:00.000Z"
   },
   "gameState": {
     "id": 1,
     "market_rate": 0,
     "weather_status": "sunny",
-    "news_text": "Fresh simulation ready. Start registering debit cards at Bank Desk!",
+    "news_text": "Welcome to the Mini-Economy! Markets are open.",
     "bubble_active": false,
     "bubble_ends_at": null,
-    "updated_at": "2026-11-07T06:07:56.408Z"
+    "updated_at": "2026-11-07T06:00:00.000Z"
   },
   "citizens": [],
   "transactions": []
