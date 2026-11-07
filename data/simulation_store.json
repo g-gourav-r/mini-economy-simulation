@@ -1,0 +1,108 @@
+{
+  "currentSession": {
+    "id": "SESSION-770835",
+    "name": "Batch 2 - Grade 8A",
+    "createdAt": "2026-11-07T05:19:30.835Z"
+  },
+  "gameState": {
+    "id": 1,
+    "market_rate": 0,
+    "weather_status": "sunny",
+    "news_text": "Welcome to Batch 2 - Grade 8A!",
+    "bubble_active": false,
+    "bubble_ends_at": null,
+    "updated_at": "2026-11-07T05:19:30.835Z"
+  },
+  "citizens": [
+    {
+      "id": "cit_1794028770538_lltkt",
+      "session_id": "SESSION-342566",
+      "qr_id": "CARD-VERIFY-1",
+      "name": "Rohan Gupta",
+      "balance": 775,
+      "mf_invested_amount": 0,
+      "has_insurance": false,
+      "created_at": "2026-11-07T05:19:30.538Z"
+    }
+  ],
+  "transactions": [
+    {
+      "id": "tx_1794028770806_mm7i5",
+      "session_id": "SESSION-342566",
+      "citizen_id": "cit_1794028770538_lltkt",
+      "station": "MF",
+      "amount": 375,
+      "description": "Mutual Fund Cash-Out (100%): Redeemed ₹375",
+      "created_at": "2026-11-07T05:19:30.806Z",
+      "citizens": {
+        "name": "Rohan Gupta",
+        "qr_id": "CARD-VERIFY-1"
+      }
+    },
+    {
+      "id": "tx_1794028770773_5khp4",
+      "session_id": "SESSION-342566",
+      "citizen_id": "cit_1794028770538_lltkt",
+      "station": "MF",
+      "amount": -300,
+      "description": "Mutual Fund Deposit: Purchased ₹300 units",
+      "created_at": "2026-11-07T05:19:30.773Z",
+      "citizens": {
+        "name": "Rohan Gupta",
+        "qr_id": "CARD-VERIFY-1"
+      }
+    },
+    {
+      "id": "tx_1794028770757_jqp8n",
+      "session_id": "SESSION-342566",
+      "citizen_id": "cit_1794028770538_lltkt",
+      "station": "Scam",
+      "amount": -100,
+      "description": "🚨 Scam Alley: The House Always Wins! (Lost ₹100)",
+      "created_at": "2026-11-07T05:19:30.757Z",
+      "citizens": {
+        "name": "Rohan Gupta",
+        "qr_id": "CARD-VERIFY-1"
+      }
+    },
+    {
+      "id": "tx_1794028770741_4c80u",
+      "session_id": "SESSION-342566",
+      "citizen_id": "cit_1794028770538_lltkt",
+      "station": "Scam",
+      "amount": 100,
+      "description": "🎉 Scam Alley: Beginner's Luck Double! (Won ₹100)",
+      "created_at": "2026-11-07T05:19:30.741Z",
+      "citizens": {
+        "name": "Rohan Gupta",
+        "qr_id": "CARD-VERIFY-1"
+      }
+    },
+    {
+      "id": "tx_1794028770718_jiw2i",
+      "session_id": "SESSION-342566",
+      "citizen_id": "cit_1794028770538_lltkt",
+      "station": "Travel",
+      "amount": -100,
+      "description": "Travel Arena: City 3D Flyover",
+      "created_at": "2026-11-07T05:19:30.718Z",
+      "citizens": {
+        "name": "Rohan Gupta",
+        "qr_id": "CARD-VERIFY-1"
+      }
+    },
+    {
+      "id": "tx_1794028770698_x4kgl",
+      "session_id": "SESSION-342566",
+      "citizen_id": "cit_1794028770538_lltkt",
+      "station": "Entertainment",
+      "amount": -200,
+      "description": "Entertainment Shop: Full Song / Music Video",
+      "created_at": "2026-11-07T05:19:30.698Z",
+      "citizens": {
+        "name": "Rohan Gupta",
+        "qr_id": "CARD-VERIFY-1"
+      }
+    }
+  ]
+}
